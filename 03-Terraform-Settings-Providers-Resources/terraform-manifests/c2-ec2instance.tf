@@ -4,6 +4,7 @@ resource "aws_instance" "myec2vm" {
   instance_type = "t3.micro"
   user_data = file("${path.module}/app1-install.sh")
   subnet_id = aws_subnet.example.id
+  vpc_security_group_ids = ["${aws_security_group.webserver-sg.id}"]
   tags = {  
     "Name" = "EC2 Demo"
     "hmkim" = "EC2"

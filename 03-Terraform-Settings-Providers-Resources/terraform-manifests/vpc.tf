@@ -1,44 +1,21 @@
-resource "aws_internet_gateway" "igw" {
-  vpc_id = aws_vpc.default.id
+resource "aws_vpc" "default" {
+  cidr_block = "10.0.0.0/16"
+  enable_dns_hostnames = true
 
   tags = {
-    Name = "IGW"
-    "hmkim" = "igw"
+    Name = "test-hmkim-terraform-vpc"
+    "hmkim" = "vpc"
   }
 }
 
-resource "aws_security_group" "webserver-sg" {
-    name = "webserver-sg"
-    description = "allow 22, 80"
-    vpc_id = aws_vpc.default.id
-}
+resource "aws_subnet" "example" {
+  vpc_id            = aws_vpc.default.id
+  cidr_block        = "10.0.1.0/24"
+  availability_zone = "ap-northeast-2a"
+  map_public_ip_on_launch = true
 
-resource "aws_security_group_rule" "webserver-sg-ssh" {
-    type = "ingress"
-    from_port = 22
-    to_port = 22
-    protocol = "tcp"
-    cidr_blocks = [ "0.0.0.0/0" ]
-    security_group_id = aws_security_group.webserver-sg.id
-    description = "ssh"
-}
-
-resource "aws_security_group_rule" "webserver-sg-http" {
-    type = "ingress"
-    from_port = 80
-    to_port = 80
-    protocol = "tcp"
-    cidr_blocks = [ "0.0.0.0/0" ]
-    security_group_id = aws_security_group.webserver-sg.id
-    description = "http"
-}
-
-resource "aws_security_group_rule" "webserver-sg-outbound" {
-    type = "egress"
-    from_port = 0
-    to_port = 0
-    protocol = "-1"
-    cidr_blocks = [ "0.0.0.0/0" ]
-    security_group_id = aws_security_group.webserver-sg.id
-    description = "outbound"
+  tags = {
+    "hmkim" = "terraform-subnet"
+    Name = "test-hmkim-terraform-pub-subnet"
+  }
 }
